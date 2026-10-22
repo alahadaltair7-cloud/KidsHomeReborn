@@ -34,8 +34,7 @@ jobs:
 
       - name: Verificar e extrair projeto
         run: |
-          unzip -q KidsHomeReborn_project.zip -d project
-          test -f project/KidsHomeReborn/app/build.gradle.kts
+          unzip -q KidsHomeReborn_project_v2.zip -d project
       - name: Corrigir compatibilidade JVM
         run: |
           sed -i '/^android {/a\    kotlinOptions { jvmTarget = "1.8" }' project/KidsHomeReborn/app/build.gradle.kts
