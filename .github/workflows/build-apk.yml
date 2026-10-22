@@ -24,26 +24,25 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Configurar Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          cmdline-tools-version: 12266719
+      
 
-      - name: Instalar componentes do Android SDK
-        run: |
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Preparar Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
 
       - name: Verificar e extrair projeto
         run: |
           unzip -q KidsHomeReborn_project.zip -d project
-          test -f project/KidsHomeReborn/gradlew
           test -f project/KidsHomeReborn/app/build.gradle.kts
-
-      - name: Compilar APK
+    
+      - name: Compilar APK         
         run: |
           cd project/KidsHomeReborn
-          chmod +x gradlew
-          ./gradlew --no-daemon :app:assembleDebug
+          gradle --no-daemon :app:assembleDebug
+
+      
 
       - name: Disponibilizar APK
         uses: actions/upload-artifact@v4
