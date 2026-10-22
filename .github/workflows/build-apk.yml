@@ -36,7 +36,9 @@ jobs:
         run: |
           unzip -q KidsHomeReborn_project.zip -d project
           test -f project/KidsHomeReborn/app/build.gradle.kts
-    
+      - name: Corrigir compatibilidade JVM
+        run: |
+          sed -i '/^android {/a\    kotlinOptions { jvmTarget = "1.8" }' project/KidsHomeReborn/app/build.gradle.kts
       - name: Compilar APK         
         run: |
           cd project/KidsHomeReborn
