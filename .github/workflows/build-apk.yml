@@ -16,21 +16,25 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configurar Java 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Configurar Android SDK
-        run: |
-          echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> "$GITHUB_ENV"
-          echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> "$GITHUB_ENV"
-          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses
-          /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "build-tools;35.0.0"
+        uses: android-actions/setup-android@v3
 
-      - name: Extrair o projeto
+      - name: Verificar e extrair o projeto
         run: |
-          unzip -q KidsHomeReborn_project.zip -d project
+          echo "Arquivos na raiz:"
+          ls -lah
+          echo "Verificando ZIP:"
+          file KidsHomeReborn_project.zip
+          unzip -t KidsHomeReborn_project.zip
+          mkdir -p project
+          unzip KidsHomeReborn_project.zip -d project
+          echo "Procurando gradlew:"
+          find project -name gradlew -type f
           test -f project/KidsHomeReborn/gradlew
 
       - name: Compilar APK
@@ -38,7 +42,8 @@ jobs:
           cd project/KidsHomeReborn
           bash gradlew :app:assembleDebug
 
-      - name: Disponibilizar o APK
+      - name: Disponibilizar APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: KidsHomeReborn-debug
