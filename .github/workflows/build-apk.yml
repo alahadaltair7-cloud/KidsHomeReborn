@@ -7,12 +7,15 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-24.04
 
     steps:
-      - name: Baixar o projeto
+      - name: Baixar projeto
         uses: actions/checkout@v4
 
       - name: Configurar Java 17
@@ -24,27 +27,25 @@ jobs:
       - name: Configurar Android SDK
         uses: android-actions/setup-android@v3
         with:
-          cmdline-tools-version: 12.0
+          cmdline-tools-version: 12266719
 
-      - name: Verificar e extrair o projeto
+      - name: Instalar componentes do Android SDK
         run: |
-          echo "Arquivos na raiz:"
-          ls -lah
-          echo "Verificando ZIP:"
-          unzip -t KidsHomeReborn_project.zip
-          mkdir -p project
-          unzip KidsHomeReborn_project.zip -d project
-          echo "Procurando gradlew:"
-          find project -name gradlew -type f
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Verificar e extrair projeto
+        run: |
+          unzip -q KidsHomeReborn_project.zip -d project
           test -f project/KidsHomeReborn/gradlew
+          test -f project/KidsHomeReborn/app/build.gradle.kts
 
       - name: Compilar APK
         run: |
           cd project/KidsHomeReborn
-          bash gradlew :app:assembleDebug
+          chmod +x gradlew
+          ./gradlew --no-daemon :app:assembleDebug
 
       - name: Disponibilizar APK
-        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: KidsHomeReborn-debug
