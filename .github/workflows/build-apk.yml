@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Baixar o projeto
@@ -23,13 +23,14 @@ jobs:
 
       - name: Configurar Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          cmdline-tools-version: 12.0
 
       - name: Verificar e extrair o projeto
         run: |
           echo "Arquivos na raiz:"
           ls -lah
           echo "Verificando ZIP:"
-          file KidsHomeReborn_project.zip
           unzip -t KidsHomeReborn_project.zip
           mkdir -p project
           unzip KidsHomeReborn_project.zip -d project
